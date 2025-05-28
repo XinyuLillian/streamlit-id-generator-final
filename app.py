@@ -1,22 +1,21 @@
-
 import streamlit as st
 from PIL import Image, ImageDraw, ImageFont
 import io
 import os
 import datetime
 
-# 设置文件保存路径（可以使用本地 CSV 文件记录 ID 与顺序）
+# 配置路径
 SAVE_FILE = "id_no_log.csv"
-IMAGE_PATH = "image.jpg"  # 你自己的图片名
-FONT_PATH = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"  # 可替换为你自己的字体路径
-FONT_SIZE = 48
+IMAGE_PATH = "image.jpg"  # 替换成你实际的图片名
+FONT_PATH = "/System/Library/Fonts/Supplemental/Arial Unicode.ttf"  # 本地路径可改
+FONT_SIZE_NO = 42
+FONT_SIZE_ID = 64
 
-# 初始化 log 文件
+# 初始化日志
 if not os.path.exists(SAVE_FILE):
     with open(SAVE_FILE, "w") as f:
         f.write("id,no,timestamp\n")
 
-# 加载现有记录
 def load_log():
     log = {}
     with open(SAVE_FILE, "r") as f:
@@ -26,13 +25,11 @@ def load_log():
             log[id_] = int(no)
     return log
 
-# 保存新的记录
 def save_log(user_id, no):
     timestamp = datetime.datetime.now().isoformat()
     with open(SAVE_FILE, "a") as f:
         f.write(f"{user_id},{no},{timestamp}\n")
 
-# 主函数
 def main():
     st.title("亲爱的小锹，生成你的专属表彰！")
 
@@ -49,30 +46,43 @@ def main():
 
         st.success(f"你好，{user_id}！你的专属证书编号是：No. {no}")
 
-        # 加载图片
+        # 打开图片
         image = Image.open(IMAGE_PATH).convert("RGB")
         draw = ImageDraw.Draw(image)
 
-        # 添加编号到图片上（可以根据需要调整坐标）
+        # 加载字体
         try:
-            font = ImageFont.truetype(FONT_PATH, FONT_SIZE)
-        except:
-            font = ImageFont.load_default()
+            font_no = ImageFont.truetype(FONT_PATH, FONT_SIZE_NO)
+            font_id = ImageFont.truetype(FONT_PATH, FONT_SIZE_ID)
+        except Exception as e:
+            st.warning("⚠️ 自定义字体加载失败，将使用默认字体。")
+            font_no = ImageFont.load_default()
+            font_id = ImageFont.load_default()
 
-        text = f"No. {no}"
-        text_position = (50, 50)  # 你可以改成图片中留出的区域坐标
-        draw.text(text_position, text, fill="black", font=font)
+        # 画 NO.
+        text_no = f"No. {no}"
+        position_no = (30, 20)  # 向右下角移动
+        draw.text(position_no, text_no, fill="white", font=font_no)
 
-        # 显示图片
-        st.image(image, caption=f"含编号的图片：No. {no}", use_column_width=True)
+        # 模拟加粗：多次绘制，轻微偏移
+        fill_color = "white"  # 确保定义了填充颜色
+        for offset in [(1,0), (0,1), (1,1)]:
+            pos = (position_no[0] + offset[0], position_no[1] + offset[1])
+            draw.text(pos, text_no, fill=fill_color, font=font_no)
 
-        # 下载链接
+        # 画 ID
+        position_id = (850, 1870)  # 你可以再调这个位置
+        draw.text(position_id, user_id, fill=(255, 0, 250), font=font_id)
+
+        # 显示和下载
+        st.image(image, caption=f"已生成编号：No. {no}", use_column_width=True)
+
         img_bytes = io.BytesIO()
         image.save(img_bytes, format='JPEG')
         img_bytes.seek(0)
 
         st.download_button(
-            label="下载你的图片",
+            label="下载你的表彰图片",
             data=img_bytes,
             file_name=f"Your_Image_No_{no}.jpg",
             mime="image/jpeg"
