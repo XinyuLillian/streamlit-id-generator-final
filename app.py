@@ -9,8 +9,8 @@ SAVE_FILE = "id_no_log.csv"
 IMAGE_PATH = "image.jpg"  # 替换成你实际的图片名
 
 # 字体路径（放到项目文件夹内）
-FONT_PATH_NO = "/Users/xinyu/Desktop/GC-No/Blackbox.ttf"            # Blackbox字体文件
-FONT_PATH_ID = "/Users/xinyu/Desktop/GC-No/SourceHanSerifCN-Regular-1.otf"    # 思源宋体字体文件
+FONT_PATH_NO = "Blackbox.ttf"            # Blackbox字体文件
+FONT_PATH_ID = "SourceHanSerifCN-Regular-1.otf"    # 思源宋体字体文件
 
 FONT_SIZE_NO = 48
 FONT_SIZE_ID = 60
