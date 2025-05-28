@@ -7,9 +7,13 @@ import datetime
 # 配置路径
 SAVE_FILE = "id_no_log.csv"
 IMAGE_PATH = "image.jpg"  # 替换成你实际的图片名
-FONT_PATH = "/System/Library/Fonts/Supplemental/Arial Unicode.ttf"  # 本地路径可改
-FONT_SIZE_NO = 42
-FONT_SIZE_ID = 64
+
+# 字体路径（放到项目文件夹内）
+FONT_PATH_NO = "/Users/xinyu/Desktop/GC-No/Blackbox.ttf"            # Blackbox字体文件
+FONT_PATH_ID = "/Users/xinyu/Desktop/GC-No/SourceHanSerifCN-Regular-1.otf"    # 思源宋体字体文件
+
+FONT_SIZE_NO = 48
+FONT_SIZE_ID = 60
 
 # 初始化日志
 if not os.path.exists(SAVE_FILE):
@@ -52,10 +56,10 @@ def main():
 
         # 加载字体
         try:
-            font_no = ImageFont.truetype(FONT_PATH, FONT_SIZE_NO)
-            font_id = ImageFont.truetype(FONT_PATH, FONT_SIZE_ID)
+            font_no = ImageFont.truetype(FONT_PATH_NO, FONT_SIZE_NO)
+            font_id = ImageFont.truetype(FONT_PATH_ID, FONT_SIZE_ID)
         except Exception as e:
-            st.warning("⚠️ 自定义字体加载失败，将使用默认字体。")
+            st.warning(f"⚠️ 自定义字体加载失败，将使用默认字体。\n错误信息：{e}")
             font_no = ImageFont.load_default()
             font_id = ImageFont.load_default()
 
@@ -64,18 +68,12 @@ def main():
         position_no = (30, 20)  # 向右下角移动
         draw.text(position_no, text_no, fill="white", font=font_no)
 
-        # 模拟加粗：多次绘制，轻微偏移
-        fill_color = "white"  # 确保定义了填充颜色
-        for offset in [(1,0), (0,1), (1,1)]:
-            pos = (position_no[0] + offset[0], position_no[1] + offset[1])
-            draw.text(pos, text_no, fill=fill_color, font=font_no)
-
         # 画 ID
         position_id = (850, 1870)  # 你可以再调这个位置
         draw.text(position_id, user_id, fill=(255, 0, 250), font=font_id)
 
         # 显示和下载
-        st.image(image, caption=f"已生成编号：No. {no}", use_column_width=True)
+        st.image(image, caption=f"已生成编号：No. {no}", use_container_width=True)
 
         img_bytes = io.BytesIO()
         image.save(img_bytes, format='JPEG')
